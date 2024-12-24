@@ -26,10 +26,11 @@ export function registerMiddlewares(app: Application) {
         credentials: true,
       })
     )
-    .use(multer().single('file'))
     .disable('x-powered-by');
 }
 
-export function registerRoutes(app: Application) {    
+export function registerRoutes(app: Application) { 
+  // console.log("-routes-",routes);
+     
   app.use('/api', routes).use(routeNotFound).use(handleApiError);
 }

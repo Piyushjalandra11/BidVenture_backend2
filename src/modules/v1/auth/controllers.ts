@@ -4,8 +4,43 @@ import { generateOTP } from '../../../helpers/otp';
 import OTP from '../../../models/otpModel';
 import User from '../../../models/userModel';
 import { isOTPExpired } from './service';
+import { generateJWT } from '../../../helpers/jwt'; 
 
-// Handle Signup OTP Verification
+export const registerUser = async (req: Request, res: Response): Promise<void> => {
+  const { email, name } = req.body;
+
+  try {
+    const existingUser = await User.findOne({ where: { email } });
+
+  
+    if (existingUser) {
+      const otp = generateOTP();
+      const expiresAt = new Date(new Date().getTime() + 5 * 60 * 1000); 
+
+      
+      await OTP.create({ email, otp, expiresAt });
+      await sendOTPEmail(email, otp);
+
+      res.status(200).json({ message: 'OTP sent successfully, please verify to login' });
+      return;
+    }
+
+  
+    const otp = generateOTP();
+    const expiresAt = new Date(new Date().getTime() + 5 * 60 * 1000); 
+
+ 
+    await OTP.create({ email, otp, expiresAt });
+    await sendOTPEmail(email, otp);
+
+    res.status(200).json({ message: 'OTP sent successfully, please verify to complete signup' });
+  } catch (error) {
+    console.error("Error sending OTP email:", error);
+    res.status(500).json({ message: 'Failed to send OTP', error });
+  }
+};
+
+
 export const verifySignup = async (req: Request, res: Response): Promise<void> => {
   const { email, otp, name } = req.body;
 
@@ -20,24 +55,30 @@ export const verifySignup = async (req: Request, res: Response): Promise<void> =
     const existingUser = await User.findOne({ where: { email, isVerified: false } });
 
     if (existingUser) {
-      res.status(400).json({ message: 'User already exists' });
+      res.status(400).json({ message: 'User already exists, please login' });
       return;
     }
 
     const user = await User.create({ email, name });
-    console.log("jhvbdljkgbg;kjdfg")
-    res.status(201).json({ message: 'Signup successful', user });
+    const token = generateJWT(user); 
+
+    res.status(201).json({ message: 'Signup successful', user, token });
   } catch (error) {
     res.status(500).json({ message: 'Error during signup', error });
   }
 };
 
-//  login
-export const verifyLogin = async (req: Request, res: Response): Promise<void> => {
+
+export const verifySignin = async (req: Request, res: Response): Promise<void> => {
   const { email, otp } = req.body;
 
   try {
-    const otpRecord = await OTP.findOne({ where: { email, otp } });
+    const otpRecord = await OTP.findOne({
+      where: {
+        email,
+        otp: otp.toString(),  
+      },
+    });
 
     if (!otpRecord || isOTPExpired(otpRecord.expiresAt)) {
       res.status(400).json({ message: 'Invalid or expired OTP' });
@@ -47,13 +88,41 @@ export const verifyLogin = async (req: Request, res: Response): Promise<void> =>
     const user = await User.findOne({ where: { email } });
 
     if (!user) {
-      res.status(404).json({ message: 'User not found' });
+      res.status(404).json({ message: 'User not found, please sign up first' });
       return;
     }
 
-    res.status(200).json({ message: 'Login successful', user });
+    const token = generateJWT(user); 
+
+    res.status(200).json({ message: 'Login successful', user, token });
   } catch (error) {
-    res.status(500).json({ message: 'Error during login', error });
+    console.error("Error during signin verification:", error);
+    res.status(500).json({ message: 'Error during signin verification', error });
+  }
+};
+
+
+export const sendOTPForSignin = async (req: Request, res: Response): Promise<void> => {
+  const { email } = req.body;
+
+  try {
+    const existingUser = await User.findOne({ where: { email } });
+
+    if (!existingUser) {
+      res.status(404).json({ message: 'User not found, please sign up first' });
+      return;
+    }
+
+    const otp = generateOTP();
+    const expiresAt = new Date(new Date().getTime() + 5 * 60 * 1000); 
+
+    await OTP.create({ email, otp, expiresAt });
+    await sendOTPEmail(email, otp);
+
+    res.status(200).json({ message: 'OTP sent successfully for login' });
+  } catch (error) {
+    console.error("Error sending OTP email:", error);
+    res.status(500).json({ message: 'Failed to send OTP', error });
   }
 };
 
@@ -66,40 +135,18 @@ export const sendOTPEmail = async (email: string, otp: string): Promise<void> =>
       pass: 'obhl grtx qhda gdxl',
     },
   });
-console.log("email",email,"otp",otp);
 
   const mailOptions = {
     from: 'piyush.jalandar@hiteshi.com',
-    to:email,
+    to: email,
     subject: 'Your OTP for Login/Signup',
     text: `Your OTP is ${otp}. It will expire in 10 minutes.`,
   };
 
   try {
-    // to send Email 
-    await transporter.sendMail(mailOptions);  //ye tha phle
+    await transporter.sendMail(mailOptions);
   } catch (error) {
     console.error("Error sending OTP email:", error);
     throw new Error('Failed to send OTP email');
-  }
-};
-
-export const registerUser = async (req: Request, res: Response) => {
-  const { email, name } = req.body;
-  console.log(email);
-  
-
-  try {
-    const otp = generateOTP();
-    const expiresAt = new Date(new Date().getTime() + 5 * 60 * 1000); // Expires in 5 minutes
-
-    await OTP.create({ email, otp, expiresAt });
-    await sendOTPEmail(email, otp);
-    const user = await User.create({ email, name });
-
-    res.status(200).json({ message: 'OTP sent successfully' });
-  } catch (error) {
-    console.error("Error sending OTP email:", error);  
-    res.status(500).json({ message: 'Failed to send OTP', error });
   }
 };

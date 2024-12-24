@@ -1,4 +1,3 @@
-import './config/index';
 
 import express from 'express';
 import { config } from './config/index';
