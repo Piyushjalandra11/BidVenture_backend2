@@ -3,7 +3,6 @@ import express, { Application, NextFunction, Request, Response } from 'express';
 import morgan from 'morgan';
 import hpp from 'hpp';
 import helmet from 'helmet';
-import multer from 'multer';
 import cors from 'cors';
 
 import { handleApiError, routeNotFound } from '../modules/v1/common/controllers';
@@ -30,7 +29,6 @@ export function registerMiddlewares(app: Application) {
 }
 
 export function registerRoutes(app: Application) { 
-  // console.log("-routes-",routes);
      
   app.use('/api', routes).use(routeNotFound).use(handleApiError);
 }

@@ -7,7 +7,7 @@ const router = Router();
 
 router.get("/", getProducts);
 router.get("/:id", getProduct);
-router.post('/', upload.single('file'), createProductHandler);
+router.post('/', upload.array('files', 10), createProductHandler);
 router.put("/:id", updateProductHandler);
 router.delete("/:id", deleteProductHandler);
 

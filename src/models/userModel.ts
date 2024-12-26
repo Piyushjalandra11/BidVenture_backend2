@@ -1,7 +1,6 @@
 import { DataTypes, Model } from 'sequelize';
 import sequelize from '../db';
 
-// Define User model
 class User extends Model {
   public id!: number;
   public email!: string;
@@ -14,7 +13,7 @@ class User extends Model {
 User.init(
   {
     email: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING, 
       allowNull: false,
       unique: true,
       validate: {

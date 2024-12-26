@@ -1,14 +1,27 @@
-
 import multer from 'multer';
-import path from 'path';
+import { v2 as cloudinary } from 'cloudinary';
+import { CloudinaryStorage } from 'multer-storage-cloudinary';
+import { config } from '../config';
+import path from 'path'; 
 
-// Configure multer storage
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, path.join(__dirname, '../uploads')); // Adjust path as needed
-  },
-  filename: (req, file, cb) => {
-    cb(null, `${Date.now()}-${file.originalname}`);
+
+cloudinary.config({
+  cloud_name: config.CLOUD_NAME, 
+  api_key: config.API_KEY,       
+  api_secret: config.API_SECRET, 
+});
+
+
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'uploads', 
+    format: async (req, file) => path.extname(file.originalname).replace('.', ''), 
+    public_id: (req, file) => `${Date.now()}-${file.originalname}`, 
+  } as {
+    folder: string;
+    format?: (req: Express.Request, file: Express.Multer.File) => string | Promise<string>;
+    public_id?: (req: Express.Request, file: Express.Multer.File) => string;
   },
 });
 

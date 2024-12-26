@@ -1,9 +1,9 @@
-
 import express from 'express';
 import { config } from './config/index';
 import { registerMiddlewares, registerRoutes } from './middlewares/middlewares';
 import { logger } from './helpers';
 import sequelize from './db';
+import './models/associations'
 
 
 Promise.all([]).then(bootstrapServer).catch(handleServerInitError);
@@ -16,7 +16,7 @@ function bootstrapServer() {
   registerMiddlewares(app);
   registerRoutes(app);
 
-  sequelize.sync({ alter: true })  // Set force: true during development if you want to drop and recreate tables
+  sequelize.sync({ alter: true })  // Set force: true to drop and recreate tables
     .then(() => {
         console.log('Database connected successfully');
     })

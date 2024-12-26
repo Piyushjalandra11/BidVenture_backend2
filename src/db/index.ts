@@ -2,14 +2,14 @@ import { Sequelize } from 'sequelize';
 import { config } from '../config';
 
 const sequelize = new Sequelize(
-    config.DB_NAME as string, // Database name
-    config.DB_USER as string, // Database username
-    config.DB_PASSWORD as string, // Database password
+    config.DB_NAME as string, 
+    config.DB_USER as string, 
+    config.DB_PASSWORD as string, 
     {
-      host: config.DB_HOST, // Database host
-      port: parseInt(config.DB_PORT as string, 10) || 5432, // Database port (default is 5432 for PostgreSQL)
+      host: config.DB_HOST, 
+      port: parseInt(config.DB_PORT as string, 10) || 5432, 
       dialect: 'postgres',
-      logging: false, // Disable logging in the console
+      logging: false, 
     }
   );
 

@@ -20,7 +20,12 @@ const configSchema = z
     DB_USER: z.string().optional(),
     DB_PASSWORD: z.string().optional(),
     DB_HOST: z.string().optional(),
-    DB_PORT: z.string().optional()
+    DB_PORT: z.string().optional(),
+
+// for product images used cloudnary key
+    CLOUD_NAME: z.string().optional(),
+    API_KEY: z.string().optional(),
+    API_SECRET: z.string().optional()
   })
   .readonly();
 
