@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
 import nodemailer from 'nodemailer';
 import { generateOTP } from '../../../helpers/otp';
-import OTP from '../../../models/otpModel';
-import User from '../../../models/userModel';
+import OTP from '../otp/model';
+import User from './model';
 import { isOTPExpired } from './service';
 import { generateJWT } from '../../../helpers/jwt';
 
@@ -13,27 +13,15 @@ export const registerUser = async (req: Request, res: Response): Promise<void> =
     const existingUser = await User.findOne({ where: { email } });
 
 
-    if (existingUser) {
-      const otp = generateOTP();
-      const expiresAt = new Date(new Date().getTime() + 5 * 60 * 1000);
-
-
-      await OTP.create({ email, otp, expiresAt });
-      await sendOTPEmail(email, otp);
-
-      res.status(200).json({ message: 'OTP sent successfully, please verify to login' });
-      return;
-    }
-
-
     const otp = generateOTP();
     const expiresAt = new Date(new Date().getTime() + 5 * 60 * 1000);
 
 
-    await OTP.create({ email, otp, expiresAt });
-    await sendOTPEmail(email, otp);
+    OTP.create({ email, otp, expiresAt });
+    sendOTPEmail(email, otp);
 
-    res.status(200).json({ message: 'OTP sent successfully, please verify to complete signup' });
+    res.status(200).json({ message: 'OTP sent successfully, please verify to login', userExist: existingUser ? true : false });
+
   } catch (error) {
     console.error("Error sending OTP email:", error);
     res.status(500).json({ message: 'Failed to send OTP', error });
@@ -59,7 +47,7 @@ export const verifySignup = async (req: Request, res: Response): Promise<void> =
       return;
     }
 
-    const user = await User.create({ email, name });
+    const user = await User.create({ email, name, isVerified: true });
     const token = generateJWT(user);
 
     res.status(201).json({ message: 'Signup successful', user, token });
@@ -91,6 +79,8 @@ export const verifySignin = async (req: Request, res: Response): Promise<void> =
       res.status(404).json({ message: 'User not found, please sign up first' });
       return;
     }
+
+
 
     const token = generateJWT(user);
 

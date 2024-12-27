@@ -1,4 +1,4 @@
-import Auction from "../../../models/auctionModel";
+import { Auction } from "./model";
 
 export const createAuction = async (data: any) => {
   return await Auction.create(data);

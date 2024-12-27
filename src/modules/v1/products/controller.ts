@@ -6,8 +6,6 @@ import {
   updateProduct,
   deleteProduct,
 } from "./service";
-import { createAuction } from "../auction/service";
-import Category from "../../../models/categoryModel";
 
 export const getProducts = async (req: Request, res: Response) => {
   try {
@@ -32,36 +30,6 @@ export const getProduct = async (req: Request, res: Response): Promise<void> => 
 };
 
 
-// export const createProductHandler = async (req: Request, res: Response): Promise<void> => {
-//   try {
-//     const productData = JSON.parse(req.body.product_data);
-//     // console.log("-productData-", productData);
-
-
-//     const files = req.files as Express.Multer.File[] | undefined;
-
-//     if (!files || files.length === 0) {
-//       res.status(400).json({ message: "No files uploaded" });
-//       return;
-//     }
-
-
-//     const productPayload = {
-//       ...productData,
-//       image_urls: files.map((file) => file.path),
-//     };
-
-
-//     const product = await createProduct(productPayload);
-
-//     res.status(201).json({
-//       message: "Product created successfully",
-//       product: product,
-//     });
-//   } catch (error: any) {
-//     res.status(500).json({ message: error.message });
-//   }
-// };
 export const createProductHandler = async (req: Request, res: Response): Promise<void> => {
   try {
     const productData = JSON.parse(req.body.product_data);
@@ -71,27 +39,12 @@ export const createProductHandler = async (req: Request, res: Response): Promise
       res.status(400).json({ message: "No files uploaded" });
       return;
     }
-
-    // Check if the category exists
-    const category = await Category.findByPk(productData.categoryId);
-    if (!category) {
-      res.status(400).json({ message: "Invalid category" });
-      return;
-    }
-
-    // Create Auction
-    const auctionData = {
-      productId: productData.id,
-      startingBid: productData.startingBid,
-      startTime: new Date(),
-      endTime: new Date(new Date().getTime() + 10 * 1000), // 10 seconds auction
-    };
-    const auction = await createAuction(auctionData);
+    console.log("-files",files)
+    
 
     const productPayload = {
       ...productData,
-      image_urls: files.map((file) => file.path),
-      auctionId: auction.id,
+       images :  files.map((file) => file.path),
     };
 
     const product = await createProduct(productPayload);
@@ -99,7 +52,6 @@ export const createProductHandler = async (req: Request, res: Response): Promise
     res.status(201).json({
       message: "Product and Auction created successfully",
       product,
-      auction,
     });
   } catch (error: any) {
     res.status(500).json({ message: error.message });

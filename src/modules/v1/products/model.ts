@@ -1,16 +1,27 @@
-import { DataTypes, Model } from "sequelize";
-import sequelize from "../db";
-import Category from "./categoryModel";
-import Auction from "./auctionModel";
+import { DataTypes, Model, Optional } from "sequelize";
+import sequelize from "../../../db";
+import Category from "../catagories/model"
 
-class Product extends Model {
+interface ProductAttributes {
+  id: number;
+  name: string;
+  price: number;
+  description: string;
+  images: string[];
+}
+
+interface ProductCreationAttributes extends Optional<ProductAttributes, "id"> {}
+
+class Product extends Model<ProductAttributes, ProductCreationAttributes> {
   public id!: number;
   public name!: string;
   public price!: number;
-  public categoryId!: number;
-  public auctionId!: number | null;
   public description!: string;
   public images!: string[];
+
+  public addCategories!: (categories: Category[] | Category) => Promise<void>;
+  public getCategories!: () => Promise<Category[]>;
+  public setCategories!: (categories: Category[] | Category) => Promise<void>;
 }
 
 Product.init(
@@ -35,22 +46,6 @@ Product.init(
     images: {
       type: DataTypes.ARRAY(DataTypes.STRING),
       allowNull: true,
-    },
-    categoryId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: "categories", // Table name for the Category model
-        key: "id",
-      },
-    },
-    auctionId: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-      references: {
-        model: "auctions", // Table name for the Auction model
-        key: "id",
-      },
     },
   },
   {

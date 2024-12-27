@@ -3,7 +3,8 @@ import { config } from './config/index';
 import { registerMiddlewares, registerRoutes } from './middlewares/middlewares';
 import { logger } from './helpers';
 import sequelize from './db';
-import './models/associations'
+import './modules/v1/associations'
+import cors from 'cors';
 
 
 Promise.all([]).then(bootstrapServer).catch(handleServerInitError);
@@ -12,6 +13,10 @@ function bootstrapServer() {
   const app = express();
 
   const PORT = config.PORT;
+
+  app.use(cors({
+    origin: '*',
+  }));
 
   registerMiddlewares(app);
   registerRoutes(app);
@@ -25,7 +30,7 @@ function bootstrapServer() {
     });
 
 
-app.listen(PORT, () => {
+app.listen(PORT,() => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });
 

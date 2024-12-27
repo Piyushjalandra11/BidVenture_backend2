@@ -1,4 +1,4 @@
-import Product from "../../../models/productModel";
+import Product from "./model";
 
 export const getAllProducts = async () => {
   return await Product.findAll();
@@ -9,7 +9,18 @@ export const getProductById = async (id: number) => {
 };
 
 export const createProduct = async (data: any) => {
-  return await Product.create(data);
+  const { name, price, description, images, categories } = data
+
+  const product = await Product.create({
+    name,
+    price,
+    description,
+    images,
+  });
+
+  
+  await product.addCategories(categories);
+  return product
 };
 
 export const updateProduct = async (id: number, data: any) => {
