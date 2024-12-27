@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { createAuction, getAuctionById, getAllAuctions } from "./service";
 
-// Get all auctions
+
 export const getAuctionsHandler = async (req: Request, res: Response): Promise<void> => {
   try {
     const auctions = await getAllAuctions();
@@ -11,7 +11,7 @@ export const getAuctionsHandler = async (req: Request, res: Response): Promise<v
   }
 };
 
-// Get auction by ID
+
 export const getAuctionHandler = async (req: Request, res: Response): Promise<void> => {
   try {
     const auction = await getAuctionById(Number(req.params.id));
@@ -25,7 +25,7 @@ export const getAuctionHandler = async (req: Request, res: Response): Promise<vo
   }
 };
 
-// Create auction for a product
+
 export const createAuctionHandler = async (req: Request, res: Response): Promise<void> => {
   try {
     const auctionData = req.body; // Assuming auction data is coming in request body
