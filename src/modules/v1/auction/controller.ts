@@ -19,18 +19,6 @@ export const getAuctionsHandler = async (req: Request, res: Response): Promise<v
 };
 
 
-// export const getAuctionHandler = async (req: Request, res: Response): Promise<void> => {
-//   try {
-//     const auction = await getAuctionById(Number(req.params.id));
-//     if (!auction) {
-//       res.status(404).json({ message: 'Auction not found' });
-//       return;
-//     }
-//     res.status(200).json(auction);
-//   } catch (error: any) {
-//     res.status(500).json({ message: error.message });
-//   }
-// };
 export const getAuctionHandler = async (req: Request, res: Response): Promise<void> => {
   try {
     const auctionId = parseInt(req.params.id); // Convert string to number
