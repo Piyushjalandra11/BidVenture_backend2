@@ -9,13 +9,14 @@ export class Auction extends Model {
   public current_highest_bid!: number;
   public highest_bidder!: string;
   public status!: 'active' | 'closed';
+  public category!: string;
 }
 
 Auction.init(
   {
     auction_id: {
-      type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4,
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
       primaryKey: true,
     },
     product_id: {
@@ -39,8 +40,12 @@ Auction.init(
       defaultValue: '',
     },
     status: {
-      type: DataTypes.ENUM('active', 'closed'),
-      defaultValue: 'active',
+      type: DataTypes.ENUM('active', 'closed','upcoming'),
+      defaultValue: 'upcoming',
+    },
+    category: {
+      type: DataTypes.STRING,
+      allowNull: false,
     },
   },
   {

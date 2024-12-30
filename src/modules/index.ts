@@ -22,7 +22,7 @@ async function registerRoutes(currentDir = __dirname) {
           .relative(__dirname, path.dirname(routesFilePath))
           .replace(/\\/g, '/');
 
-        // console.log(`Registering route: ${prefix} -> ${routesFilePath}`);
+        console.log(`Registering route: ${prefix} -> ${routesFilePath}`);
 
         try {
           const routeModule = await import(routesFilePath);

@@ -25,7 +25,8 @@ const configSchema = z
 // for product images used cloudnary key
     CLOUD_NAME: z.string().optional(),
     API_KEY: z.string().optional(),
-    API_SECRET: z.string().optional()
+    API_SECRET: z.string().optional(),
+    JWT_SECRET: z.string().optional()
   })
   .readonly();
 

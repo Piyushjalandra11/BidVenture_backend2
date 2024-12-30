@@ -56,4 +56,7 @@ Product.init(
   }
 );
 
+// Product.belongsToMany(Category, { through: "ProductCategories" });
+// Category.belongsToMany(Product, { through: "ProductCategories" });
+
 export default Product;

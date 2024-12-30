@@ -6,16 +6,13 @@ import User from './model';
 import { isOTPExpired } from './service';
 import { generateJWT } from '../../../helpers/jwt';
 
-export const registerUser = async (req: Request, res: Response): Promise<void> => {
+export const checkuser = async (req: Request, res: Response): Promise<void> => {
   const { email, name } = req.body;
 
   try {
     const existingUser = await User.findOne({ where: { email } });
-
-
     const otp = generateOTP();
     const expiresAt = new Date(new Date().getTime() + 5 * 60 * 1000);
-
 
     OTP.create({ email, otp, expiresAt });
     sendOTPEmail(email, otp);
@@ -31,7 +28,6 @@ export const registerUser = async (req: Request, res: Response): Promise<void> =
 
 export const verifySignup = async (req: Request, res: Response): Promise<void> => {
   const { email, otp, name } = req.body;
-
   try {
     const otpRecord = await OTP.findOne({ where: { email, otp } });
 
@@ -45,10 +41,12 @@ export const verifySignup = async (req: Request, res: Response): Promise<void> =
     if (existingUser) {
       res.status(400).json({ message: 'User already exists, please login' });
       return;
-    }
+    } 
 
     const user = await User.create({ email, name, isVerified: true });
     const token = generateJWT(user);
+    console.log("Extracted Token:", token); // Log token extraction
+
 
     res.status(201).json({ message: 'Signup successful', user, token });
   } catch (error) {
@@ -80,8 +78,6 @@ export const verifySignin = async (req: Request, res: Response): Promise<void> =
       return;
     }
 
-
-
     const token = generateJWT(user);
 
     res.status(200).json({ message: 'Login successful', user, token });
@@ -94,7 +90,6 @@ export const verifySignin = async (req: Request, res: Response): Promise<void> =
 
 export const sendOTPForSignin = async (req: Request, res: Response): Promise<void> => {
   const { email } = req.body;
-
   try {
     const existingUser = await User.findOne({ where: { email } });
 
@@ -140,3 +135,9 @@ export const sendOTPEmail = async (email: string, otp: string): Promise<void> =>
     throw new Error('Failed to send OTP email');
   }
 };
+
+
+export const getUserInfo = async (req: Request, res: Response) => {
+  const user = await User.findOne({ where: { email: req.user?.email } })
+  res.status(200).json(user)
+}

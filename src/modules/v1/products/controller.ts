@@ -39,12 +39,12 @@ export const createProductHandler = async (req: Request, res: Response): Promise
       res.status(400).json({ message: "No files uploaded" });
       return;
     }
-    console.log("-files",files)
-    
+    console.log("-files", files)
+
 
     const productPayload = {
       ...productData,
-       images :  files.map((file) => file.path),
+      images: files.map((file) => file.path),
     };
 
     const product = await createProduct(productPayload);
