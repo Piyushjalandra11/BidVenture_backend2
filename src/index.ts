@@ -6,17 +6,18 @@ import sequelize from './db';
 import './modules/v1/associations';
 import cors from 'cors';
 import { startAuctionCronJob } from './helpers/cron';
-import http from 'http';  // Import HTTP server for Socket.io
-import { Server } from 'socket.io';  // Correct import for Socket.io SServer
+import http from 'http';
+import { Server } from 'socket.io';
 import { handleSocket } from './helpers/socket';
+import associateModels from './modules/v1/associations';
 
 Promise.all([]).then(bootstrapServer).catch(handleServerInitError);
 
 function bootstrapServer() {
   const app = express();
 
-  const server = http.createServer(app);  // Create HTTP server using Express app
-  const io = new Server(server);  // Initialize Socket.io server correctly
+  const server = http.createServer(app);
+  const io = new Server(server);
 
   const PORT = config.PORT;
 
@@ -27,9 +28,10 @@ function bootstrapServer() {
   registerMiddlewares(app);
   registerRoutes(app);
 
-  startAuctionCronJob();
-  
-  sequelize.sync({ alter: true })
+  // startAuctionCronJob();
+  associateModels();
+
+  sequelize.sync({ alter: true })    // force: true to reacreate bd
     .then(() => {
       console.log('Database connected successfully');
     })
@@ -37,7 +39,7 @@ function bootstrapServer() {
       console.error('Error syncing database:', error);
     });
 
-    handleSocket(io)
+  handleSocket(io)
 
   server.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);

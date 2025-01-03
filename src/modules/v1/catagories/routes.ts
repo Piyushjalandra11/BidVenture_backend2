@@ -5,12 +5,13 @@ import {
   getCategoryByIdHandler,
   deleteCategoryHandler,
 } from "./controller";
+import { upload } from "../../../middlewares/multer";
 
 const router = express.Router();
 
-router.post("/", createCategoryHandler); 
-router.get("/", getAllCategoriesHandler); 
-router.get("/:id", getCategoryByIdHandler); 
-router.delete("/:id", deleteCategoryHandler); 
+router.post("/", upload.single('file'),createCategoryHandler);
+router.get("/", getAllCategoriesHandler);
+router.get("/:id", getCategoryByIdHandler);
+router.delete("/:id", deleteCategoryHandler);
 
 export default router;

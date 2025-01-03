@@ -1,5 +1,4 @@
 import { NextFunction, Request, Response } from 'express';
-
 import { CustomError } from '../../../errors/error';
 import { response } from '../../../helpers/';
 import { CustomResponse } from '../../../helpers/response';

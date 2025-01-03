@@ -1,3 +1,4 @@
+import { findAuctionsWithProductCount } from "../auction/service";
 import Product from "./model";
 
 export const getAllProducts = async () => {
@@ -9,17 +10,18 @@ export const getProductById = async (id: number) => {
 };
 
 export const createProduct = async (data: any) => {
-  const { name, price, description, images, categories } = data
+  const { name, price, description, images, categoryId } = data
 
   const product = await Product.create({
     name,
     price,
     description,
     images,
+    categoryId,
   });
 
-  
-  await product.addCategories(categories);
+  await findAuctionsWithProductCount(product);
+  // await product.addCategories(categories);
   return product
 };
 

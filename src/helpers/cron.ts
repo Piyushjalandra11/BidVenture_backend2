@@ -1,5 +1,5 @@
 import cron from 'node-cron';
-import { Auction } from '../modules/v1/auction/model';
+import  Auction  from '../modules/v1/auction/model';
 import { Op } from 'sequelize';
 
 const updateAuctionStatus = async (): Promise<void> => {
@@ -10,20 +10,20 @@ const updateAuctionStatus = async (): Promise<void> => {
       { status: 'active' },
       {
         where: {
-          status: 'upcoming',                             
-          start_time: { [Op.lte]: currentTime },         
-          end_time: { [Op.gte]: currentTime },            
+          status: 'upcoming',
+          start_time: { [Op.lte]: currentTime },
+          end_time: { [Op.gte]: currentTime },
         },
       }
     );
 
-    
+
     await Auction.update(
       { status: 'closed' },
       {
         where: {
-          end_time: { [Op.lt]: currentTime },            
-          status: { [Op.ne]: 'closed' },               
+          end_time: { [Op.lt]: currentTime },
+          status: { [Op.ne]: 'closed' },
         },
       }
     );

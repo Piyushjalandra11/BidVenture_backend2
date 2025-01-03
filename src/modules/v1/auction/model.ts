@@ -1,56 +1,59 @@
-import { Model, DataTypes } from 'sequelize';
-import sequelize from '../../../db';
+import { DataTypes, Model } from "sequelize";
+import sequelize from "../../../db";
+import Product from "../products/model";
+import Category from "../catagories/model";
 
-export class Auction extends Model {
-  public auction_id!: string;
-  public product_id!: string;
-  public start_time!: Date;
-  public end_time!: Date;
-  public current_highest_bid!: number;
-  public highest_bidder!: string;
-  public status!: 'active' | 'closed';
-  public category!: string;
+export default class Auction extends Model {
+  id!: number;
+  name!: string;
+  startTime!: Date;
+  endTime!: Date;
+  categoryId!: number;
+  public status!: 'active' | 'closed' | 'upcoming';
+  
+  // Add methods for handling products
+  public addProducts!: (products: Product[]) => Promise<void>;
+  public getProducts!: () => Promise<Product[]>;
+  public setProducts!: (products: Product[]) => Promise<void>;
 }
 
 Auction.init(
   {
-    auction_id: {
+    id: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
     },
-    product_id: {
+    name: {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    start_time: {
+    startTime: {
       type: DataTypes.DATE,
       allowNull: false,
     },
-    end_time: {
+    endTime: {
       type: DataTypes.DATE,
       allowNull: false,
     },
-    current_highest_bid: {
+    categoryId: {
       type: DataTypes.INTEGER,
-      defaultValue: 0,
-    },
-    highest_bidder: {
-      type: DataTypes.STRING,
-      defaultValue: '',
+      allowNull: false,
+      references: {
+        model: Category,
+        key: "id",
+      },
+      onDelete: "CASCADE",
     },
     status: {
-      type: DataTypes.ENUM('active', 'closed','upcoming'),
+      type: DataTypes.ENUM('active', 'closed', 'upcoming'),
       defaultValue: 'upcoming',
-    },
-    category: {
-      type: DataTypes.STRING,
-      allowNull: false,
     },
   },
   {
     sequelize,
-    tableName: 'auctions',
+    modelName: "Auction",
+    tableName: "auctions",
+    timestamps: true,
   }
 );
-

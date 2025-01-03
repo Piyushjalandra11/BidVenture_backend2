@@ -41,11 +41,11 @@ export const verifySignup = async (req: Request, res: Response): Promise<void> =
     if (existingUser) {
       res.status(400).json({ message: 'User already exists, please login' });
       return;
-    } 
+    }
 
     const user = await User.create({ email, name, isVerified: true });
     const token = generateJWT(user);
-    console.log("Extracted Token:", token); // Log token extraction
+    console.log("Extracted Token:", token);
 
 
     res.status(201).json({ message: 'Signup successful', user, token });

@@ -1,5 +1,8 @@
-import { Auction } from "./model";
-import { Op } from 'sequelize';
+import sequelize from "../../../db";
+import Category from "../catagories/model";
+import Product from "../products/model";
+import Auction from "./model";
+import { Op, Sequelize } from 'sequelize';
 
 export const createAuction = async (data: any) => {
   return await Auction.create(data);
@@ -57,5 +60,70 @@ export const getPreviousAuctions = async (category?: string) => {
 
   return await Auction.findAll({
     where: whereCondition,
+    include: [
+      {
+        model: Product,
+        as: 'product',  
+        required: true,
+        include: [
+          {
+            model: Category,
+            as: 'categories',  
+            required: false,  
+            attributes: ['id', 'name'],
+            through: { attributes: [] }
+          }
+        ]
+      }
+    ]
   });
+};
+
+export const findAuctionsWithProductCount = async (product: any) => {
+  try {
+    // Step 1: Find auctions with product count
+    const auctions = await Auction.findAll({
+      attributes: {
+        include: [
+          [
+            Sequelize.fn('COUNT', Sequelize.col('products.id')),
+            'productCount', // Alias for the product count
+          ],
+        ],
+      },
+      include: [
+        {
+          model: Product,
+          as: 'products',
+          attributes: [], // Exclude product attributes in the result
+        },
+        {
+          model: Category,
+          as: 'category',
+          attributes: ['id', 'name'], // Include category details
+        },
+      ],
+      group: ['Auction.id', 'category.id'], // Group by auction and category to avoid aggregation conflicts
+    });
+    console.log("auctions", auctions);
+
+    // Step 2: Create a new auction and associate the product
+    const newAuction = await Auction.create({
+      name: `Auction for Product ${product.id}`, // You can customize the name
+      startTime: new Date(),
+      endTime: new Date(new Date().getTime() + 10 * 1000), // Auction ends in 10 seconds
+      categoryId: product.categoryId,
+      status: "upcoming"
+    });
+
+    // Associate the product with the new auction using `addProducts`
+    await newAuction.addProducts([product.id]);
+
+    console.log("New Auction Created", newAuction);
+
+    return auctions; // Return auctions with product count
+  } catch (error) {
+    console.error("Error in findAuctionsWithProductCount:", error);
+    throw new Error("Error finding auctions or creating a new auction.");
+  }
 };

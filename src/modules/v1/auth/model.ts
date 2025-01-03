@@ -7,13 +7,13 @@ class User extends Model {
   public name!: string;
   public createdAt!: Date;
   public updatedAt!: Date;
-  public isVerified!: boolean; 
+  public isVerified!: boolean;
 }
 
 User.init(
   {
     email: {
-      type: DataTypes.STRING, 
+      type: DataTypes.STRING,
       allowNull: false,
       unique: true,
       validate: {
@@ -24,10 +24,10 @@ User.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    isVerified:{
-      type: DataTypes.BOOLEAN,  
+    isVerified: {
+      type: DataTypes.BOOLEAN,
       allowNull: false,
-      defaultValue: false, 
+      defaultValue: false,
     }
   },
   {

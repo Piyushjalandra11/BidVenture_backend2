@@ -1,27 +1,27 @@
-import { DataTypes, Model, Optional } from "sequelize";
+import { DataTypes, Model } from "sequelize";
 import sequelize from "../../../db";
-import Category from "../catagories/model"
+import Category from "../catagories/model";
+import Auction from "../auction/model";
 
-interface ProductAttributes {
-  id: number;
-  name: string;
-  price: number;
-  description: string;
-  images: string[];
-}
+// Product Model
+export default class Product extends Model {
+  id!: number;
+  name!: string;
+  price!: number;
+  description!: string;
+  images!: string[];
+  categoryId!: number;
 
-interface ProductCreationAttributes extends Optional<ProductAttributes, "id"> {}
-
-class Product extends Model<ProductAttributes, ProductCreationAttributes> {
-  public id!: number;
-  public name!: string;
-  public price!: number;
-  public description!: string;
-  public images!: string[];
-
-  public addCategories!: (categories: Category[] | Category) => Promise<void>;
-  public getCategories!: () => Promise<Category[]>;
-  public setCategories!: (categories: Category[] | Category) => Promise<void>;
+  // Method to associate with Auction
+  static associate() {
+    // Many-to-many relationship between Product and Auction
+    this.belongsToMany(Auction, {
+      through: "AuctionProduct", // Junction table
+      foreignKey: "productId", // Foreign key for productId in the junction table
+      otherKey: "auctionId", // Foreign key for auctionId in the junction table
+      as: "auctions", // Alias for the associated auctions
+    });
+  }
 }
 
 Product.init(
@@ -47,6 +47,15 @@ Product.init(
       type: DataTypes.ARRAY(DataTypes.STRING),
       allowNull: true,
     },
+    categoryId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: Category,
+        key: "id",
+      },
+      onDelete: "CASCADE",
+    },
   },
   {
     sequelize,
@@ -55,8 +64,3 @@ Product.init(
     timestamps: true,
   }
 );
-
-// Product.belongsToMany(Category, { through: "ProductCategories" });
-// Category.belongsToMany(Product, { through: "ProductCategories" });
-
-export default Product;

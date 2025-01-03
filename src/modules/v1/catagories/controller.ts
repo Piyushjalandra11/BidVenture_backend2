@@ -1,33 +1,32 @@
 import { Request, Response } from "express";
-import Category from "./model";
+import  Category  from "./model";
 
 export const createCategoryHandler = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { name } = req.body;
-
-    if (!name) {
-      res.status(400).json({ message: "Category name is required" });
-      return;
+      const categoryData = JSON.parse(req.body.catagories_data);
+      const file = req.file as Express.Multer.File | undefined;
+  
+      if (!file ) {
+        res.status(400).json({ message: "No files uploaded" });
+        return;
+      }
+      console.log("-file", file)
+  
+  
+      const catagories = {
+        ...categoryData,
+        image: file.path
+      };
+  
+      const category = await Category.create(catagories);
+  
+      res.status(201).json({
+        message: "Category created successfully",
+        category,
+      });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
     }
-
-    const existingCategory = await Category.findOne({ where: { name } });
-    if (existingCategory) {
-      res.status(409).json({ message: "Category already exists" });
-      return;
-    }
-
-    const category = await Category.create({ name });
-
-    res.status(201).json({
-      message: "Category created successfully",
-      category,
-    });
-  } catch (error) {
-    res.status(500).json({
-      message: "Error creating category",
-      error,
-    });
-  }
 };
 
 
