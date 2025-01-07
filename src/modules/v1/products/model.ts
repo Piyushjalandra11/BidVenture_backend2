@@ -57,7 +57,43 @@ Product.init(
         model: User,
         key: "id",
       },
-      onDelete: "CASCADE", // If the user is deleted, products will be deleted as well
+      onDelete: "CASCADE",
+    },
+    warranty: {
+      type: DataTypes.STRING, 
+      allowNull: true,
+    },
+    modelYear: {
+      type: DataTypes.STRING, 
+      allowNull: true,
+
+    },
+    condition: {
+      type: DataTypes.STRING, 
+      allowNull: true,
+    },
+    owner: {
+      type: DataTypes.STRING, 
+      allowNull: true,
+    },
+    accidental: {
+      type: DataTypes.BOOLEAN, 
+      defaultValue: false,
+      allowNull: true,
+    },
+    replacedParts: {
+      allowNull: true,
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
+    purchasedBy: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: User,
+        key: "id",
+      },
+      onDelete: "CASCADE",
     },
   },
   {

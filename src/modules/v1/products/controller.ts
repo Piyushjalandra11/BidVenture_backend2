@@ -6,6 +6,9 @@ import {
   updateProduct,
   deleteProduct,
 } from "./service";
+import Product from "./model";
+import User from "../auth/model";
+import { Op } from "sequelize";
 
 export const getProducts = async (req: Request, res: Response) => {
   try {
@@ -43,6 +46,13 @@ export const createProductHandler = async (req: Request, res: Response): Promise
       ...productData,
       images: files.map((file) => file.path),
       userId: req.user?.id,
+      warranty: productData.warranty || "Not specified", 
+      status: productData.status || "unsold", 
+      modelYear: productData.modelYear || "Not specified", 
+      condition: productData.condition || "Not specified", 
+      owner: productData.ownerNumber || "Not specified", 
+      accidental: productData.accidental || false, 
+      replacedParts: productData.replacedParts || false, 
     };
 
     const product = await createProduct(productPayload);
@@ -78,6 +88,38 @@ export const deleteProductHandler = async (req: Request, res: Response) => {
   try {
     await deleteProduct(Number(req.params.id));
     res.status(204).send();
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
+
+export const getUserProductHistory = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const userId = req.user?.id;
+    console.log(userId);
+    
+
+    if (!userId) {
+      res.status(400).json({ message: "User ID is required" });
+      return;
+    }
+
+
+    const products = await Product.findAll({
+      where: {
+        [Op.or]: [
+          { purchasedBy: userId }, 
+          { userId: userId },      
+        ],
+      },
+      
+    });
+
+    res.status(200).json({
+      products
+    });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }

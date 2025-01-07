@@ -1,4 +1,4 @@
-// import { Bid } from "./model";
+import Bidding from "./model";
 import User from "../auth/model";
 import { Request, Response } from 'express';
 import Auction from "../auction/model"
@@ -53,3 +53,32 @@ export const getBids = async (req: Request, res: Response): Promise<void> => {
     res.status(500).json({ message: 'Failed to fetch bids', error });
   }
 };
+
+export const getLeaderBoard = async(req: Request, res: Response) => {
+try{
+  
+  if(!req.params.id){
+    throw new Error("Id not found")
+  }
+  const leaderboards = await Bidding.findAll({
+    where: {
+      productId: req.params.id
+    },
+     include: [
+          {
+            model: User,
+            as: 'user',
+            attributes: ['id', 'name', "email"],
+          }
+        ],
+  })
+  res.status(200).json({
+    message: 'Leaderboards fetched successfully',
+    leaderboards,
+  });
+}
+catch(error){
+  console.error('Error fetching leaderboard:', error);
+    res.status(500).json({ message: 'Failed to fetch leaderboard', error });
+}
+}

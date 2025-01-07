@@ -44,4 +44,9 @@ export default function associateModels() {
     as: "user",
   });
 
+  Product.belongsTo(User, {
+    foreignKey: "purchasedBy",  
+    as: "buyer",  
+  });
+
 }

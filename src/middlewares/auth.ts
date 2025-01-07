@@ -23,6 +23,7 @@ const auth = async (req: CustomRequest, res: Response, next: NextFunction) => {
         if (!token) {
             throw new Error('Authentication failed. Token missing.')
         }
+        console.log(token)
 
         const decoded = jwt.verify(token, secret) as DecodedToken
         console.log(decoded);

@@ -10,7 +10,12 @@ export const getProductById = async (id: number) => {
 };
 
 export const createProduct = async (data: any) => {
-  const { name, price, description, images, categoryId, userId } = data
+  const { name, price, description, images, categoryId, userId,  warranty,
+    modelYear,
+    condition,
+    owner,
+    accidental,
+    replacedParts} = data
 
   const product = await Product.create({
     name,
@@ -18,7 +23,13 @@ export const createProduct = async (data: any) => {
     description,
     images,
     categoryId,
-    userId
+    userId,
+    warranty,
+    modelYear,
+    condition,
+    owner,
+    accidental,
+    replacedParts
   });
 
   const auctionproduct = await addProductToAuction(product);
@@ -38,9 +49,9 @@ export const deleteProduct = async (id: number) => {
   return await product.destroy();
 };
 
-export const updateProductStatus = async(productId: any) => {
+export const updateProductStatus = async(productId: any, purchasedBy: any) => {
 
-return await Product.update({status: "sold"}, {
+return await Product.update({status: "sold", purchasedBy: purchasedBy}, {
   where: { id: productId },
 });
 

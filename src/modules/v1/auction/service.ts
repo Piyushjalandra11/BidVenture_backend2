@@ -19,7 +19,6 @@ export const getAuctionById = async (auctionId: number) => {
       {
         model: Product,
         as: 'products',
-        attributes: ['id', 'name', 'price', 'description', 'images'],
         include: [
           {
             model: Category,
@@ -58,12 +57,12 @@ export const getLiveAuctions = async () => {
       {
         model: Category,
         as: 'category', 
-        attributes: ['id', 'name', "image"], 
+        attributes: ['id', 'name', "image", ], 
       },
       {
         model: Product,
         as: 'products',
-        attributes: [], // No need to fetch all product attributes
+        attributes: [], 
       },
     ],
     attributes: {
@@ -98,8 +97,23 @@ export const getUpcomingAuctions = async (category?: string) => {
         model: Category,
         as: 'category',
         attributes: ['id', 'name', "image"],
+      },{
+        model: Product,
+        as: 'products',
+        attributes: [], 
       },
     ],
+    attributes: {
+      include: [
+        [
+          Sequelize.fn('COUNT', Sequelize.col('products.id')),
+          'productCount',
+        ],
+      ],
+    },
+    group: ['Auction.id', 'category.id'],
+    
+    
   });
 };
 
@@ -121,21 +135,23 @@ export const getPreviousAuctions = async (category?: string) => {
       {
         model: Category,
         as: 'category',
-        attributes: ['id', 'name', "image"],
+        attributes: ['id', 'name', 'image'], 
       },
       {
         model: Product,
         as: 'products',
-        attributes: ['id', 'name', 'price', 'description', 'images'],
-        include: [
-          {
-            model: Category,
-            as: 'category',
-            attributes: ['id', 'name', "image"],
-          },
-        ],
+        attributes: [],
       },
     ],
+    attributes: {
+      include: [
+        [
+          Sequelize.fn('COUNT', Sequelize.col('products.id')), 
+          'productCount',
+        ],
+      ],
+    },
+    group: ['Auction.id', 'category.id'],
   });
 };
 
