@@ -40,7 +40,7 @@ function bootstrapServer() {
       console.error('Error syncing database:', error);
     });
 
-  handleSocket(io)
+  handleSocket(io)  
 
   server.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);

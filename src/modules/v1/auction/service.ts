@@ -169,13 +169,13 @@ export const addProductToAuction = async (product: any) => {
       order: [['createdAt', 'DESC']]
     });
 
-    if (auction && auction.products.length < 2) {
+    if (auction && auction.products.length < 50) {
       console.log("Adding product to existing auction with less than 100 products.");
     } else {
       console.log("No eligible auction found. Creating a new auction...");
       auction = await Auction.create({
         name: `Auction - ${new Date().toISOString()}`,
-        startTime: new Date(new Date().getTime() + 10 * 60 * 1000),
+        startTime: new Date(new Date().getTime() + 1 * 60 * 1000),
         categoryId: product.categoryId,
         status: 'upcoming'
       });

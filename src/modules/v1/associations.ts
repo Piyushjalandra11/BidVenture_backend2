@@ -3,6 +3,7 @@ import Auction from './auction/model';
 import Category from './catagories/model';
 import Bidding from './bid/model';
 import User from './auth/model';
+import AuctionRoom from './auction/auctionroommodel';
 
 export default function associateModels() {
   Category.hasMany(Auction, { foreignKey: 'categoryId', as: 'auctions' });
@@ -47,6 +48,16 @@ export default function associateModels() {
   Product.belongsTo(User, {
     foreignKey: "purchasedBy",  
     as: "buyer",  
+  });
+
+  AuctionRoom.belongsTo(Auction, {
+    foreignKey: 'auctionId', // Foreign key in AuctionRoom
+    as: 'auction', // Alias for the association
+  });
+  
+  Auction.hasOne(AuctionRoom, {
+    foreignKey: 'auctionId',
+    as: 'room', // Alias for the association
   });
 
 }
