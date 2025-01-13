@@ -71,8 +71,8 @@ export const getLiveAuctionsHandler = async (req: Request, res: Response): Promi
 
 export const getUpcomingAuctionsHandler = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { category } = req.query;
-    const upcomingAuctions = await getUpcomingAuctions(category as string);
+    // const { category } = req.query;
+    const upcomingAuctions = await getUpcomingAuctions();
     res.status(200).json(upcomingAuctions);
   } catch (error: any) {
     res.status(500).json({ message: error.message });
@@ -82,8 +82,8 @@ export const getUpcomingAuctionsHandler = async (req: Request, res: Response): P
 
 export const getPreviousAuctionsHandler = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { category } = req.query;
-    const previousAuctions = await getPreviousAuctions(category as string);
+    // const { category } = req.query;
+    const previousAuctions = await getPreviousAuctions();
     res.status(200).json(previousAuctions);
   } catch (error: any) {
     res.status(500).json({ message: error.message });

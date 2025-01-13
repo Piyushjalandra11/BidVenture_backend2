@@ -1,4 +1,5 @@
 import type { Request } from 'express';
+import { Op } from 'sequelize';
 
 declare global {
   namespace Express {
@@ -17,3 +18,16 @@ export interface IUser {
   updatedAt: Date;
 }
 
+
+
+// types/product.d.ts
+export interface ProductSearchFilters {
+  productName?: string;
+  categoryId?: number;
+  minPrice?: { [Op.gte]: number };
+  maxPrice?: { [Op.lte]: number };
+  productCondition?: string;
+  modelYear?: string;
+  productStatus?: 'active' | 'closed';
+  [Op.or]?: Array<{ name: { [Op.iLike]: string } } | { description: { [Op.iLike]: string } }>;
+}
