@@ -36,7 +36,7 @@ export const createProductHandler = async (req: Request, res: Response): Promise
   try {
     const productData = JSON.parse(req.body.product_data);
     const files = req.files as Express.Multer.File[] | undefined;
-
+console.log("product data from frontend",productData)
     if (!files || files.length === 0) {
       res.status(400).json({ message: "No files uploaded" });
       return;
@@ -53,9 +53,12 @@ export const createProductHandler = async (req: Request, res: Response): Promise
       owner: productData.ownerNumber || "Not specified", 
       accidental: productData.accidental || false, 
       replacedParts: productData.replacedParts || false, 
+      startAuctionTime: productData.startAuctionTime,
+      endAuctionTime: productData.endAuctionTime
     };
 
     const product = await createProduct(productPayload);
+    console.log("product after backend created",product)
 
     res.status(201).json({
       message: "Product and Auction created successfully",

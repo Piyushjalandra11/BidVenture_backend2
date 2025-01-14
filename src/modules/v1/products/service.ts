@@ -16,7 +16,8 @@ export const createProduct = async (data: any) => {
     owner,
     accidental,
     replacedParts,
-    startTime, endTime
+    startAuctionTime, 
+    endAuctionTime
   
   } = data
 
@@ -32,12 +33,14 @@ export const createProduct = async (data: any) => {
     condition,
     owner,
     accidental,
-    replacedParts
+    replacedParts,
+    startAuctionTime, 
+    endAuctionTime
   });
-  console.log("this is my product",product);
+  // console.log("this is my product",product);
   
 
-  const auction = await addProductToAuction(product, new Date(startTime), new Date(endTime));
+  const auction = await addProductToAuction(product, new Date(startAuctionTime), new Date(endAuctionTime));
   await product.update({ auctionId: auction.id });
   // await product.addCategories(categories);
   return product

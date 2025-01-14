@@ -47,7 +47,7 @@ export const getAllAuctions = async () => {
 export const getLiveAuctions = async () => {
   const currentTime = new Date();
   const whereCondition: any = {
-    startTime: { [Op.lte]: currentTime },
+    startTime: { [Op.lte]: currentTime }, // Auction should have started before or at the current time
     endTime: { [Op.gte]: currentTime },
     status: 'active',
   };
@@ -190,11 +190,14 @@ export const addProductToAuction = async (product: any, startTime: Date, endTime
     // return product;
 
     const auction = await Auction.create({
-      name: `Auction - ${new Date().toISOString()}`,
-      startTime: startTime, // User-defined start time
-      endTime: endTime, // User-defined end time
+      // name: `Auction - ${new Date().toISOString()}`,/
+      name: `Auction for ${product.name} - ${new Date().toISOString()}`, 
+      startTime: startTime,  
+      endTime: endTime,  
       categoryId: product.categoryId,
       status: 'upcoming',
+      createdAt: new Date(),
+      updatedAt: new Date(),
 
     });
 
