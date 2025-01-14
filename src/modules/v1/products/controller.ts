@@ -22,10 +22,13 @@ export const getProducts = async (req: Request, res: Response) => {
 export const getProduct = async (req: Request, res: Response): Promise<void> => {
   try {
     const product = await getProductById(Number(req.params.id));
+    
     if (!product) {
       res.status(404).json({ message: "Product not found" });
       return;
     }
+    console.log(product, "product dat from backend");
+    
     res.status(200).json(product);
   } catch (error: any) {
     res.status(500).json({ message: error.message });

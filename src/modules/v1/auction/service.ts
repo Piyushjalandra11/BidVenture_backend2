@@ -18,14 +18,8 @@ export const getAuctionById = async (auctionId: number) => {
       },
       {
         model: Product,
-        as: 'products',
-        include: [
-          {
-            model: Category,
-            as: 'category',
-            attributes: ['id', 'name', 'image'],
-          },
-        ],
+        as: 'product'
+       
       },
     ],
   });
@@ -78,6 +72,7 @@ export const getLiveAuctions = async () => {
 
   });
 };
+console.log(getLiveAuctions)
 
 
 export const getUpcomingAuctions = async (category?: string) => {

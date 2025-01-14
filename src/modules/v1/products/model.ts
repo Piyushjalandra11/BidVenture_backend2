@@ -38,6 +38,15 @@ Product.init(
       type: DataTypes.ARRAY(DataTypes.STRING),
       allowNull: true,
     },
+    // ...existing fields
+    startAuctionTime: {
+      type: DataTypes.DATE,
+      allowNull: true
+    },
+    endAuctionTime: {
+      type: DataTypes.DATE,
+      allowNull: true
+    },
     status: {
       type: DataTypes.ENUM('unsold', 'sold'),
       defaultValue: 'unsold',

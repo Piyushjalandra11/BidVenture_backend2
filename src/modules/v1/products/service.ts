@@ -6,6 +6,7 @@ export const getAllProducts = async () => {
 };
 
 export const getProductById = async (id: number) => {
+  
   return await Product.findByPk(id);
 };
 
@@ -37,7 +38,7 @@ export const createProduct = async (data: any) => {
     startAuctionTime, 
     endAuctionTime
   });
-  // console.log("this is my product",product);
+ 
   
 
   const auction = await addProductToAuction(product, new Date(startAuctionTime), new Date(endAuctionTime));

@@ -144,10 +144,13 @@ import { createSocketBid } from '../modules/v1/bid/service';
 
 const usersInRooms: Record<string, string[]> = {}; 
 const auctionProduct: Record<string, string | null> = {}; 
+const bidHistory: Record<string, {name: string;currentBid: number}[] > ={};
 
 export const handleSocket = (io: Server) => {
+  // jab bhi koi new user join hota he to ye on listen karta he or io for all listens
   io.on('connection', (socket: Socket) => {
     console.log('User connected:', socket.id);
+    
 
     // Event: joinRoom
     socket.on('joinRoom', (data: { auctionId: string; userId: string, message: string }) => {
@@ -158,6 +161,9 @@ export const handleSocket = (io: Server) => {
 
       // Join the auction room
       socket.join(roomName);
+      // new user joned brodcast mesaage to all
+      socket.to(roomName).emit('new_user', { userId, message: `User ${userId} has joined the room.` } )
+
 
       // Add user to the room
       if (!usersInRooms[roomName]) {
@@ -170,14 +176,22 @@ export const handleSocket = (io: Server) => {
       console.log(`User ${userId} joined room: ${roomName}`);
       console.log('Users in room:', usersInRooms[roomName]);
       console.log('Message:', message);
+      
 
 
       // Emit the live product for the auction
       const liveProduct = auctionProduct[auctionId] || null;
-      io.to(roomName).emit('liveProduct', liveProduct);
+      socket.emit('liveProduct', liveProduct);
+      // io.to(roomName).emit('liveProduct', liveProduct);
       console.log(`Live product for auction ${auctionId}: ${liveProduct}`);
       // new user joned brodcast mesaage to all
-      io.emit("new_user", data.userId)
+      // io.emit("new_user", data.userId)
+
+      const previousBids = bidHistory[roomName] || []
+      socket.emit("previosBids", previousBids)
+
+      console.log(`Live product for auction ${auctionId}: ${liveProduct}`);
+      console.log(`Previous bids for room ${roomName}:`, previousBids);
     });
   
 
@@ -220,11 +234,16 @@ export const handleSocket = (io: Server) => {
     });
 
     // Event: newBid
+
     socket.on('newBid', (data: { name: string; currentBid: number; auctionId: string }) => {
       const { name, currentBid, auctionId } = data;
       const roomName = `auction_${auctionId}`; 
 
       console.log(`New bid received for auction ${auctionId}:`, data);
+      if(!bidHistory[roomName]){
+        bidHistory[roomName] = [];
+      }
+      bidHistory[roomName].push ({name, currentBid})
 
       // Notify all users in the room about the new bid
       socket.to(roomName).emit('UpdateBid', { name, currentBid });
@@ -233,6 +252,8 @@ export const handleSocket = (io: Server) => {
     // Event: disconnect
     socket.on('disconnect', () => {
       console.log(`User disconnected: ${socket.id}`);
+
+
     });
   });
 };
