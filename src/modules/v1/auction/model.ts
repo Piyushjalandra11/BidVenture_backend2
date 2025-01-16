@@ -11,10 +11,13 @@ export default class Auction extends Model {
   categoryId!: number;
   public status!: 'active' | 'closed' | 'upcoming';
 
-  // Added methods for handling products
+  // methods for handling products
   public addProducts!: (products: Product[]) => Promise<void>;
   public getProducts!: () => Promise<Product[]>;
   public setProducts!: (products: Product[]) => Promise<void>;
+  product: any;
+  bids: any;
+  biddings: any;
 }
 
 Auction.init(

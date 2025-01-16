@@ -1,13 +1,10 @@
 import express, { Application } from 'express';
-
 import morgan from 'morgan';
 import hpp from 'hpp';
 import helmet from 'helmet';
 import cors from 'cors';
-
 import { handleApiError, routeNotFound } from '../modules/v1/common/controllers';
 import routes from '../modules';
-
 import { config } from '../config';
 
 export function registerMiddlewares(app: Application) {

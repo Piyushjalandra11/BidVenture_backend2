@@ -4,12 +4,11 @@ import { Request, Response } from 'express';
 import Auction from "../auction/model";
 import Product from "../products/model";
 
-// Create bid for an auction
 export const createBids = async (req: Request, res: Response): Promise<void> => {
   try {
     const { amount, userId, auctionId, productId } = req.body;
 
-    const auction = await Auction.findByPk(auctionId);
+    const auction: any = await Auction.findByPk(auctionId);
     if (!auction) {
       res.status(404).json({ message: 'Auction not found' });
       return;
@@ -21,13 +20,27 @@ export const createBids = async (req: Request, res: Response): Promise<void> => 
       return;
     }
 
-    const product = await Product.findByPk(productId); // Ensure you're using the correct model (Product)
+    const product = await Product.findByPk(productId);
     if (!product) {
       res.status(404).json({ message: 'Product not found' });
       return;
     }
 
-    // Create a new bid entry
+    if (auction.productId !== productId) {
+      res.status(400).json({ message: 'Product does not belong to this auction' });
+      return;
+    }
+    
+    const highestBid = await Bidding.findOne({
+      where: { auctionId: auctionId },
+      order: [["amount", "DESC"]],
+    });
+
+    if (highestBid && amount <= highestBid.amount) {
+      res.status(400).json({ message: 'Bid amount must be higher than the current highest bid' });
+      return;
+    }
+
     const bid = await Bidding.create({
       amount,
       userId,
@@ -44,6 +57,7 @@ export const createBids = async (req: Request, res: Response): Promise<void> => 
     res.status(500).json({ message: 'Failed to create bid', error });
   }
 };
+
 
 // Fetch all bids for a product
 export const getBids = async (req: Request, res: Response): Promise<void> => {

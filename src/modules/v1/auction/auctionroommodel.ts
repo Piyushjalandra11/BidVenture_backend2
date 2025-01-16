@@ -7,7 +7,7 @@ export default class AuctionRoom extends Model {
   public auctionId!: number;
   public timeRemaining!: number;
   public currentBid!: number;
-  public leaderboard!: string;  // Store leaderboard in JSON or any format
+  public leaderboard!: string; 
 }
 
 AuctionRoom.init(

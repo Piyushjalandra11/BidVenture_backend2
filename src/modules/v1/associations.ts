@@ -10,10 +10,8 @@ export default function associateModels() {
   Category.hasMany(Product, { foreignKey: 'categoryId', as: 'products' });
 
   Auction.belongsTo(Category, { foreignKey: 'categoryId', as: 'category' });
-  // Auction.hasMany(Product, { foreignKey: 'auctionId', as: 'products' });
 
   Product.belongsTo(Category, { foreignKey: 'categoryId', as: 'category' });
-  // Product.belongsTo(Auction, { foreignKey: 'auctionId', as: 'auction' })
 
   Auction.hasOne(Product, {
     foreignKey: "auctionId",
@@ -41,6 +39,15 @@ export default function associateModels() {
     foreignKey: "productId",
     as: "product",
   });
+  Bidding.belongsTo(Auction, {
+    foreignKey: "auctionId",
+    as: "auction",
+  });
+  Auction.hasMany(Bidding, {
+    foreignKey: "auctionId",
+    // as: "auctions",
+    as: "biddings",
+  })
 
   User.hasMany(Product, {
     foreignKey: "userId",
@@ -58,13 +65,12 @@ export default function associateModels() {
   });
 
   AuctionRoom.belongsTo(Auction, {
-    foreignKey: 'auctionId', // Foreign key in AuctionRoom
-    as: 'auction', // Alias for the association
+    foreignKey: 'auctionId', 
+    as: 'auction', 
   });
 
   Auction.hasOne(AuctionRoom, {
     foreignKey: 'auctionId',
-    as: 'room', // Alias for the association
+    as: 'room', 
   });
-
 }

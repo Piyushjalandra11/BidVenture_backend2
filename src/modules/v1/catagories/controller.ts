@@ -3,12 +3,10 @@ import  Category  from "./model";
 
 export const createCategoryHandler = async (req: Request, res: Response): Promise<void> => {
   try {
-      console.log(req.body)
 
       const categoryData = JSON.parse(req.body.catagory_data);
       const file = req.file as Express.Multer.File | undefined;
        
-      console.log(categoryData);
       if (!file ) {
         res.status(400).json({ message: "No files uploaded" });
         return;
@@ -19,10 +17,8 @@ export const createCategoryHandler = async (req: Request, res: Response): Promis
         ...categoryData,
         image: file.path
       };
-      console.log("yesssss we are aready !!!",catagories) 
   
       const category = await Category.create(catagories);
-      console.log("yesssss !!!") 
       res.status(201).json({
         message: "Category created successfully",
         category,

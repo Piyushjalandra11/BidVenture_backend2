@@ -7,26 +7,25 @@ export default class Category extends Model {
   image!: string;
 }
 
-
-  Category.init(
-    {
-      id: {
-        type: DataTypes.INTEGER,
-        autoIncrement: true,
-        primaryKey: true,
-      },
-      name: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
-      image: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
+Category.init(
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
     },
-    {
-      sequelize,
-      tableName: "categories",
-      timestamps: false,
-    }
-  );
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    image: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+  },
+  {
+    sequelize,
+    tableName: "categories",
+    timestamps: false,
+  }
+);

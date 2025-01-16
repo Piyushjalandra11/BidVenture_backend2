@@ -6,7 +6,8 @@ import {
   getLiveAuctionsHandler,
   getUpcomingAuctionsHandler,
   getPreviousAuctionsHandler,
-  joinAuctionHandler
+  joinAuctionHandler,
+  getAuctionsDetailsHandler
   
 } from './controller';
 
@@ -20,6 +21,8 @@ auctionRouter.get('/join/:id', joinAuctionHandler);
 auctionRouter.get('/upcoming', getUpcomingAuctionsHandler); 
 auctionRouter.get('/previous', getPreviousAuctionsHandler); 
 auctionRouter.get('/:id', getAuctionHandler); 
+
+auctionRouter.get('/details/:id', getAuctionsDetailsHandler)
 
 
 

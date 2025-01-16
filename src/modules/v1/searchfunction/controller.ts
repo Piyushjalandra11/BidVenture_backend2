@@ -1,9 +1,8 @@
-// controllers/productController.ts
 import { Request, Response } from "express";
 import { Op } from "sequelize";
 import Product from "../products/model";
-import Category from "../catagories/model"; 
-import { ProductSearchFilters } from "../../../@types"; 
+import Category from "../catagories/model";
+import { ProductSearchFilters } from "../../../@types";
 import { WhereOptions } from "sequelize";
 
 export const searchProducts = async (req: Request, res: Response) => {
@@ -26,15 +25,15 @@ export const searchProducts = async (req: Request, res: Response) => {
       include: [
         {
           model: Category,
-          as: "category",  
-          attributes: ["id", "name"],  
+          as: "category",
+          attributes: ["id", "name"],
         },
       ],
     });
 
     res.status(200).json({ success: true, data: products });
   } catch (error: unknown) {
-    
+
     const errorMessage = (error as Error).message;
     res.status(500).json({ success: false, message: errorMessage });
   }

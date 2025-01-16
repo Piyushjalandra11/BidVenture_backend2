@@ -24,7 +24,6 @@ function bootstrapServer() {
     },
   });
   
-
   const PORT = config.PORT;
 
   app.use(cors({
@@ -38,7 +37,7 @@ function bootstrapServer() {
   startAuctionCronJob();
   associateModels();
 
-  sequelize.sync({ alter: true })    // force: true to reacreate bd
+  sequelize.sync({ alter: true })    // force: true to recreate db
     .then(() => {
       console.log('Database connected successfully');
     })

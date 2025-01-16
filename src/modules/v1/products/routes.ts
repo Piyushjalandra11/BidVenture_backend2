@@ -8,7 +8,6 @@ const router = Router();
 
 router.get("/", getProducts);
 router.post('/', auth, upload.array('files', 10), createProductHandler);
-// router.post('/createProductHandler2', auth, upload.array('files', 10), createProductHandler2);
 
 
 router.get("/history", auth, getUserProductHistory);

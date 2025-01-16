@@ -1,3 +1,5 @@
+import User from "../auth/model";
+import Bidding from "../bid/model";
 import Category from "../catagories/model";
 import Product from "../products/model";
 import Auction from "./model";
@@ -19,7 +21,7 @@ export const getAuctionById = async (auctionId: number) => {
       {
         model: Product,
         as: 'product'
-       
+
       },
     ],
   });
@@ -37,11 +39,10 @@ export const getAllAuctions = async () => {
   });
 };
 
-
 export const getLiveAuctions = async () => {
   const currentTime = new Date();
   const whereCondition: any = {
-    startTime: { [Op.lte]: currentTime }, // Auction should have started before or at the current time
+    startTime: { [Op.lte]: currentTime },
     endTime: { [Op.gte]: currentTime },
     status: 'active',
   };
@@ -49,31 +50,13 @@ export const getLiveAuctions = async () => {
   return await Auction.findAll({
     where: whereCondition,
     include: [
-      // {
-      //   model: Category,
-      //   as: 'category',
-      //   attributes: ['id', 'name', "image",],
-      // },
       {
         model: Product,
         as: 'product',
-        // attributes: [], 
       },
     ],
-    // attributes: {
-    //   include: [
-    //     [
-    //       Sequelize.fn('COUNT', Sequelize.col('products.id')),
-    //       'productCount',
-    //     ],
-    //   ],
-    // },
-    // group: ['Auction.id', 'category.id'],
-
   });
 };
-console.log(getLiveAuctions)
-
 
 export const getUpcomingAuctions = async (category?: string) => {
   const currentTime = new Date();
@@ -82,35 +65,14 @@ export const getUpcomingAuctions = async (category?: string) => {
     status: 'upcoming',
   };
 
-  // if (category) {
-  //   whereCondition.category = category;
-  // }
-
   return await Auction.findAll({
     where: whereCondition,
     include: [
-      // {
-      //   model: Category,
-      //   as: 'category',
-      //   attributes: ['id', 'name', "image"],
-      // }, 
       {
         model: Product,
         as: 'product',
-        // attributes: ['id', 'name', 'price'],
       },
     ],
-    // attributes: {
-    //   include: [
-    //     [
-    //       Sequelize.fn('COUNT', Sequelize.col('products.id')),
-    //       'productCount',
-    //     ],
-    //   ],
-    // },
-    // group: ['Auction.id', 'category.id', 'products.id'],
-    // order: [['startTime', 'ASC']],
-
   });
 };
 
@@ -130,8 +92,8 @@ export const getPreviousAuctions = async (category?: string) => {
     include: [
       {
         model: Product,
-        as: 'product',  // Use the correct alias as defined in the association
-        attributes: [],  // We just want to count products, no need to select attributes
+        as: 'product',
+        attributes: [],
       },
       {
         model: Category,
@@ -142,58 +104,25 @@ export const getPreviousAuctions = async (category?: string) => {
     attributes: {
       include: [
         [
-          Sequelize.fn('COUNT', Sequelize.col('product.id')),  // Count the number of products
+          Sequelize.fn('COUNT', Sequelize.col('product.id')),
           'productCount',
         ],
       ],
     },
-    group: ['Auction.id', 'category.id'],  // Group by Auction and Category
+    group: ['Auction.id', 'category.id'],
   });
 };
 
 export const addProductToAuction = async (product: any, startTime: Date, endTime: Date) => {
   try {
-    // let auction: any = await Auction.findOne({
-    //   where: { status: 'upcoming', categoryId: product.categoryId },
-    //   include: [
-    //     {
-    //       model: Product,
-    //       as: 'products'
-    //     }
-    //   ],
-    //   order: [['createdAt', 'DESC']]
-    // });
-
-    // if (auction && auction.products.length < 50) {
-    //   console.log("Adding product to existing auction with less than 100 products.");
-    // } else {
-    //   console.log("No eligible auction found. Creating a new auction...");
-    //   auction = await Auction.create({
-    //     name: `Auction - ${new Date().toISOString()}`,
-    //     // startTime: new Date(new Date().getTime() + 1 * 60 * 1000),
-    //     startTime: startTime, // User-defined start time
-    //     endTime: endTime, // User-defined end time
-    //     categoryId: product.categoryId,
-    //     status: 'upcoming'
-    //   });
-    // }
-
-    // await product.update({ auctionId: auction.id });
-
-    // console.log("Product successfully added to auction!");
-
-    // return product;
-
     const auction = await Auction.create({
-      // name: `Auction - ${new Date().toISOString()}`,/
-      name: `Auction for ${product.name} - ${new Date().toISOString()}`, 
-      startTime: startTime,  
-      endTime: endTime,  
+      name: `Auction for ${product.name} - ${new Date().toISOString()}`,
+      startTime: startTime,
+      endTime: endTime,
       categoryId: product.categoryId,
       status: 'upcoming',
       createdAt: new Date(),
       updatedAt: new Date(),
-
     });
 
     return auction;
@@ -201,5 +130,46 @@ export const addProductToAuction = async (product: any, startTime: Date, endTime
   catch (error) {
     console.error("Error adding product to auction:", error);
     throw error;
+  }
+};
+
+export const getAuctionDetailsById = async (auctionId: number) => {
+  try {
+    const auction = await Auction.findOne({
+      where: { id: auctionId },
+      include: [
+        {
+          model: Product,
+          as: "product",
+          attributes: ["id", "name", "price", "description", "images"],
+        },
+        {
+          model: Bidding,
+          as: "biddings",
+          attributes: ["id", "userId", "amount", "createdAt"],
+          include: [
+            {
+              model: User,
+              as: "user",
+              attributes: ["id", "name", "email"],
+            },
+          ],
+        },
+      ],
+    });
+
+    if (!auction) return null;
+    return {
+      auctionId: auction.id,
+      product: auction.product,
+      bids: auction.biddings?.map((bid: any) => ({
+        id: bid.id,
+        amount: bid.amount,
+        createdAt: bid.createdAt,
+        user: bid.user,
+      })),
+    };
+  } catch (error: any) {
+    throw new Error("Unable to fetch auction details");
   }
 };

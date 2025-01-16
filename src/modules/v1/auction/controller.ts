@@ -6,6 +6,7 @@ import {
   getAuctionById,
   getAllAuctions,
   createAuction,
+  getAuctionDetailsById
 } from './service';
 import Bidding from '../bid/model';
 import User from '../auth/model';
@@ -20,7 +21,6 @@ export const getAuctionsHandler = async (req: Request, res: Response): Promise<v
     res.status(500).json({ message: error.message });
   }
 };
-
 
 export const getAuctionHandler = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -57,21 +57,17 @@ export const createAuctionHandler = async (req: Request, res: Response): Promise
   }
 };
 
-
 export const getLiveAuctionsHandler = async (req: Request, res: Response): Promise<void> => {
   try {
-
     const liveAuctions = await getLiveAuctions();
     res.status(200).json(liveAuctions);
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
-};;
-
+};
 
 export const getUpcomingAuctionsHandler = async (req: Request, res: Response): Promise<void> => {
   try {
-    // const { category } = req.query;
     const upcomingAuctions = await getUpcomingAuctions();
     res.status(200).json(upcomingAuctions);
   } catch (error: any) {
@@ -82,7 +78,6 @@ export const getUpcomingAuctionsHandler = async (req: Request, res: Response): P
 
 export const getPreviousAuctionsHandler = async (req: Request, res: Response): Promise<void> => {
   try {
-    // const { category } = req.query;
     const previousAuctions = await getPreviousAuctions();
     res.status(200).json(previousAuctions);
   } catch (error: any) {
@@ -93,7 +88,7 @@ export const getPreviousAuctionsHandler = async (req: Request, res: Response): P
 
 export const joinAuctionHandler = async (req: Request, res: Response): Promise<void> => {
   try {
-    const auctionId = parseInt(req.params.id); // Auction ID
+    const auctionId = parseInt(req.params.id);
     if (isNaN(auctionId)) {
       res.status(400).json({ message: 'Invalid auction ID' });
       return;
@@ -155,3 +150,31 @@ export const joinAuctionHandler = async (req: Request, res: Response): Promise<v
     res.status(500).json({ message: 'Failed to join auction', error });
   }
 };
+
+
+export const getAuctionsDetailsHandler = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const auctionId = parseInt(req.params.id)
+
+    if (isNaN(auctionId)) {
+      res.status(400).json({ messege: "Invalid auction id" })
+      return;
+    }
+
+    const auctionData = await getAuctionDetailsById(auctionId)
+
+    if (!auctionData) {
+      res.status(400).json({ messege: "Auction not found" })
+      return;
+    }
+
+    res.status(200).json({
+      success: true,
+      data: auctionData
+    })
+
+  }
+  catch (error: any) {
+    res.status(500).json({ message: error.mesaage })
+  }
+}

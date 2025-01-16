@@ -38,12 +38,9 @@ export const createProduct = async (data: any) => {
     startAuctionTime, 
     endAuctionTime
   });
- 
-  
 
   const auction = await addProductToAuction(product, new Date(startAuctionTime), new Date(endAuctionTime));
   await product.update({ auctionId: auction.id });
-  // await product.addCategories(categories);
   return product
 };
 

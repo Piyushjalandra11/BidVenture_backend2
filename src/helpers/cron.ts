@@ -1,17 +1,10 @@
 import cron from 'node-cron';
 import Auction from '../modules/v1/auction/model';
 import { Op } from 'sequelize';
-import AuctionRoom from '../modules/v1/auction/auctionroommodel';
-
 
 export async function updateAuctionStatus() {
   try {
     const currentTime = new Date();
-
-    // Find all auctions where the start time is in the future and status is not 'active'
-  
-
-    // Find all auctions that should be 'active'
     const activeAuctions = await Auction.update(
       { status: 'active' },
       {

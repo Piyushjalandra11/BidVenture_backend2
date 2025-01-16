@@ -2,6 +2,7 @@ import { DataTypes, Model } from "sequelize";
 import sequelize from "../../../db";  
 import Product from "../products/model"; 
 import User from "../auth/model";
+import Auction from "../auction/model";
 
 export default class Bidding extends Model {
   id!: number;
@@ -43,6 +44,16 @@ Bidding.init(
       },
       onDelete: "CASCADE",  
     },
+    auctionId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: Auction,
+        key: "id",
+      },
+      onDelete: "CASCADE",  
+    },
+  
   },
   {
     sequelize,
