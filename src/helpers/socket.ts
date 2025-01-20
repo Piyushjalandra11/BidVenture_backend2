@@ -9,7 +9,7 @@ export const handleSocket = (io: Server) => {
   io.on('connection', (socket: Socket) => {
     console.log('User connected:', socket.id);
 
-    // Event: joinRoom
+    // joinRoom
     socket.on('joinRoom', (data: { auctionId: string; userId: string, message: string }) => {
       const { auctionId, userId, message } = data;
       const roomName = `auction_${auctionId}`;
@@ -38,7 +38,7 @@ export const handleSocket = (io: Server) => {
 
     });
 
-    // Event: updateProduct
+    // updateProduct
     socket.on('updateProduct', (data: { auctionId: string; product: string }) => {
       const { auctionId, product } = data;
 
@@ -51,7 +51,7 @@ export const handleSocket = (io: Server) => {
       io.to(roomName).emit('liveProduct', product);
     });
 
-    // Event: removeProduct
+    // removeProduct
     socket.on('removeProduct', (auctionId: string) => {
       // Remove the product from the auction
       auctionProduct[auctionId] = null;
@@ -62,7 +62,7 @@ export const handleSocket = (io: Server) => {
       io.to(roomName).emit('liveProduct', null);
     });
 
-    // Event: create_bid
+    // create_bid
     socket.on('newBid', async (data: string) => {
       console.log("thids is new data",data);
       
@@ -85,7 +85,7 @@ export const handleSocket = (io: Server) => {
       }
     });
 
-    // Event: disconnect
+
     socket.on('disconnect', () => {
       console.log(`User disconnected: ${socket.id}`);
     });

@@ -5,6 +5,10 @@ import OTP from '../otp/model';
 import User from './model';
 import { isOTPExpired } from './service';
 import { generateJWT } from '../../../helpers/jwt';
+import Auction from '../auction/model';
+import Product from '../products/model';
+import Bidding from '../bid/model';
+import Category from '../catagories/model';
 
 export const checkuser = async (req: Request, res: Response): Promise<void> => {
   const { email, name } = req.body;
@@ -14,7 +18,7 @@ export const checkuser = async (req: Request, res: Response): Promise<void> => {
     const otp = generateOTP();
     const expiresAt = new Date(new Date().getTime() + 5 * 60 * 1000);
 
-    OTP.create({ email, otp, expiresAt });
+    OTP.create({ email, otp, expiresAt, isUsed: false });
     sendOTPEmail(email, otp);
 
     res.status(200).json({ message: 'OTP sent successfully, please verify to login', userExist: existingUser ? true : false });
@@ -45,6 +49,9 @@ export const verifySignup = async (req: Request, res: Response): Promise<void> =
 
     const user = await User.create({ email, name, isVerified: true });
     const token = generateJWT(user);
+    OTP.update({ isUsed: true }, {
+      where: { email }
+    })
 
     res.status(201).json({ message: 'Signup successful', user, token });
   } catch (error) {
@@ -61,6 +68,7 @@ export const verifySignin = async (req: Request, res: Response): Promise<void> =
       where: {
         email,
         otp: otp.toString(),
+        isUsed: false,
       },
     });
 
@@ -77,6 +85,9 @@ export const verifySignin = async (req: Request, res: Response): Promise<void> =
     }
 
     const token = generateJWT(user);
+    OTP.update({ isUsed: true }, {
+      where: { email }
+    })
 
     res.status(200).json({ message: 'Login successful', user, token });
   } catch (error) {
@@ -99,7 +110,7 @@ export const sendOTPForSignin = async (req: Request, res: Response): Promise<voi
     const otp = generateOTP();
     const expiresAt = new Date(new Date().getTime() + 5 * 60 * 1000);
 
-    await OTP.create({ email, otp, expiresAt });
+    await OTP.create({ email, otp, expiresAt, isUsed: false });
     await sendOTPEmail(email, otp);
 
     res.status(200).json({ message: 'OTP sent successfully for login' });
@@ -135,7 +146,7 @@ export const sendOTPEmail = async (email: string, otp: string): Promise<void> =>
 };
 
 
-export const getUserInfo = async (req: Request, res: Response) => {
+export const getUserInfo = async (req: Request, res: Response): Promise<void> => {
   const user = await User.findOne({ where: { email: req.user?.email } })
   res.status(200).json(user)
-}
+};

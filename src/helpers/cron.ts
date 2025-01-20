@@ -1,6 +1,8 @@
 import cron from 'node-cron';
 import Auction from '../modules/v1/auction/model';
 import { Op } from 'sequelize';
+import { declareAuctionWinners } from '../modules/v1/auction/service';
+// import { declareAuctionWinners } from './winnermail';
 
 export async function updateAuctionStatus() {
   try {
@@ -41,9 +43,11 @@ export async function updateAuctionStatus() {
 }
 
 export const startAuctionCronJob = () => {
-  cron.schedule('* * * * *', () => {
+  cron.schedule('* * * * *', async () => {
     console.log('Running Cron Job');
-    updateAuctionStatus();
+    await updateAuctionStatus();
+    // declareAuctionWinners();
+    await declareAuctionWinners();
   });
 };
 

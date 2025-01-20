@@ -22,6 +22,11 @@ OTP.init(
       type: DataTypes.DATE,
       allowNull: false,
     },
+    isUsed: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false
+    }
   },
   {
     sequelize,

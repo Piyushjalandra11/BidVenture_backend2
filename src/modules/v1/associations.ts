@@ -73,4 +73,8 @@ export default function associateModels() {
     foreignKey: 'auctionId',
     as: 'room', 
   });
+
+  Auction.belongsTo(User, { foreignKey: 'winnerId', as: 'winner' });
+Auction.belongsTo(Product, { foreignKey: 'productId', as: 'winnerproduct' });
+
 }

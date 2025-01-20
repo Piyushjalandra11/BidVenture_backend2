@@ -10,6 +10,8 @@ export default class Auction extends Model {
   endTime!: Date;
   categoryId!: number;
   public status!: 'active' | 'closed' | 'upcoming';
+  public isWinnerDeclared!: boolean;  // Add this field
+  public winnerId!: number | null; 
 
   // methods for handling products
   public addProducts!: (products: Product[]) => Promise<void>;
@@ -37,6 +39,14 @@ Auction.init(
     },
     endTime: {
       type: DataTypes.DATE,
+      allowNull: true,
+    },
+    isWinnerDeclared: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
+    winnerId: {
+      type: DataTypes.INTEGER, // Foreign key referencing the User model
       allowNull: true,
     },
     categoryId: {
